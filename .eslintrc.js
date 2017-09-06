@@ -13,32 +13,6 @@ module.exports = {
     "prettier",
     "prettier/flowtype"
   ],
-  "overrides": [
-    {
-      "files": [ "src/**/*.test.js", "src/**/*.test.jsx" ],
-      "excludedFiles": ["flow-typed/npm/*.js", "yarn.lock"],
-      "rules": {
-        "fp/no-let": "off",
-        "fp/no-mutation": "off",
-        "fp/no-nil": "off",
-        "fp/no-this": "off",
-        "fp/no-throw": "off",
-      }
-    },
-    {
-      "files": [
-        "src/components/hoc/**/*.js",
-        "src/domains/**/triggers.js",
-        "src/routes/**/*.js"
-      ],
-      "rules": {
-        "fp/no-class": "off",
-        "fp/no-mutation": "off",
-        "fp/no-nil": "off",
-        "fp/no-this": "off",
-      }
-    }
-  ],
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 6,
@@ -46,7 +20,6 @@ module.exports = {
     ecmaFeatures: {
       experimentalObjectRestSpread: true,
       generators: true,
-      jsx: true
     },
   },
   "plugins": [
@@ -56,8 +29,7 @@ module.exports = {
     "fp",
     "jsx-a11y",
     "prettier",
-    "promise",
-    "react"
+    "promise"
   ],
   "rules": {
     "arrow-body-style": ["error", "as-needed"],
@@ -123,7 +95,7 @@ module.exports = {
           },
           {
             "property": "propTypes"
-          },
+          }
         ]
       }
     ],
@@ -180,12 +152,6 @@ module.exports = {
       "error",
       {
         "extensions": [".js", ".jsx"]
-      }
-    ],
-    "react/jsx-sort-props": [
-      "error",
-      {
-        ignoreCase: true
       }
     ],
     "sort-keys": [

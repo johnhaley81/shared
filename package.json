@@ -23,22 +23,21 @@
     "eslint-plugin-react": "^7.1.0",
     "eslint-watch": "^3.1.2",
     "flow-bin": "0.54.0",
+    "flow-copy-source": "^1.2.1",
+    "husky": "^0.14.3",
     "joi-browser": "^10.6.1",
     "prettier": "^1.6.1",
     "uuid": "^3.1.0"
   },
-  "devDependencies": {
-    "flow-copy-source": "^1.2.1",
-    "husky": "^0.14.3"
-  },
-  "description": "Source code used across multiple hashback repos",
+  "devDependencies": {},
+  "description": "Source code used across multiple hashback projects",
   "license": "MIT",
   "main": "dist/index.js",
   "name": "hashback-shared",
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
     "lint": "esw ./**.js",
-    "precommit": "yarn lint",
-    "prepublish": "babel -s inline -d dist/ src/ && flow-copy-source -v src dist"
+    "postinstall": "babel -s inline -d dist/ src/ && flow-copy-source -v src dist",
+    "precommit": "yarn lint"
   }
 }

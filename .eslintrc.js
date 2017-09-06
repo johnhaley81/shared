@@ -16,7 +16,7 @@ module.exports = {
   "overrides": [
     {
       "files": [ "src/**/*.test.js", "src/**/*.test.jsx" ],
-      "excludedFiles": "flow-typed/npm/*.js",
+      "excludedFiles": ["flow-typed/npm/*.js", "yarn.lock"],
       "rules": {
         "fp/no-let": "off",
         "fp/no-mutation": "off",

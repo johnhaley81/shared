@@ -29,11 +29,10 @@
   },
   "description": "Source code used across multiple hashback repos",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "index.js",
   "name": "hashback-shared",
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
-    "build": "babel index.js --out-dir dist",
-    "lint": "esw index.js"
+    "lint": "esw ./**"
   }
 }

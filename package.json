@@ -28,15 +28,17 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "flow-copy-source": "^1.2.1",
     "husky": "^0.14.3"
   },
   "description": "Source code used across multiple hashback repos",
   "license": "MIT",
-  "main": "index.js",
+  "main": "dist/index.js",
   "name": "hashback-shared",
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
     "lint": "esw ./**.js",
-    "precommit": "yarn lint"
+    "precommit": "yarn lint",
+    "prepublish": "babel -s inline -d dist/ src/ && flow-copy-source -v src dist"
   }
 }

@@ -193,21 +193,6 @@ export type EmailFeedbackPostBodyType = {|
   to: string,
 |};
 
-export type EmailFeedbackUnsavedType = {|
-  ...EmailFeedbackPostBodyType,
-  accountId: string,
-|};
-
-export type EmailFeedbackType = {
-  ...EmailFeedbackUnsavedType,
-  ...ModelSavedFieldsType,
-};
-
-export type EmailFeedbackWithAnalysisType = {
-  ...EmailFeedbackType,
-  analysis: FeedbackAnalysisType,
-};
-
 export const EmailFeedbackPostBodySchema = Joi.object({
   content: Joi.string().required(),
   emailSentDate: Joi.string()
@@ -224,12 +209,27 @@ export const EmailFeedbackPostBodySchema = Joi.object({
   .unknown()
   .required();
 
+export type EmailFeedbackUnsavedType = {|
+  ...EmailFeedbackPostBodyType,
+  accountId: string,
+|};
+
+export type EmailFeedbackType = {
+  ...EmailFeedbackUnsavedType,
+  ...ModelSavedFieldsType,
+};
+
 export const EmailFeedbackSchema = EmailFeedbackPostBodySchema.keys({
   accountId: Joi.string().required(),
   id: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
 });
+
+export type EmailFeedbackWithAnalysisType = {
+  ...EmailFeedbackType,
+  analysis: FeedbackAnalysisType,
+};
 
 export type TwitterFeedbackUnsavedType = {|
   accountId: string,
@@ -241,11 +241,6 @@ export type TwitterFeedbackType = {
   ...ModelSavedFieldsType,
 };
 
-export type TwitterFeedbackWithAnalysisType = {
-  ...TwitterFeedbackType,
-  analysis: FeedbackAnalysisType,
-};
-
 export const TwitterFeedbackSchema = Joi.object({
   accountId: Joi.string().required(),
   id: Joi.string()
@@ -255,3 +250,8 @@ export const TwitterFeedbackSchema = Joi.object({
 })
   .unknown()
   .required();
+
+export type TwitterFeedbackWithAnalysisType = {
+  ...TwitterFeedbackType,
+  analysis: FeedbackAnalysisType,
+};

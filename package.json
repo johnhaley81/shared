@@ -2,7 +2,6 @@
   "author": "Kyle Smith <kyle.r.smiff@gmail.com>",
   "version": "0.1.0",
   "dependencies": {
-    "joi-browser": "^10.6.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -35,6 +34,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "name": "hashback-shared",
+  "peerDependency": {
+    "joi-browser": "10.6.1"
+  },
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
     "lint": "esw ./**.js",

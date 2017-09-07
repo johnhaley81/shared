@@ -2,6 +2,10 @@
   "author": "Kyle Smith <kyle.r.smiff@gmail.com>",
   "version": "0.1.0",
   "dependencies": {
+    "joi-browser": "^10.6.1",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
     "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.24.1",
@@ -25,11 +29,8 @@
     "flow-bin": "0.54.0",
     "flow-copy-source": "^1.2.1",
     "husky": "^0.14.3",
-    "joi-browser": "^10.6.1",
-    "prettier": "^1.6.1",
-    "uuid": "^3.1.0"
+    "prettier": "^1.6.1"
   },
-  "devDependencies": {},
   "description": "Source code used across multiple hashback projects",
   "license": "MIT",
   "main": "dist/index.js",
@@ -37,7 +38,6 @@
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
     "lint": "esw ./**.js",
-    "postinstall": "babel -s inline -d dist/ src/ && flow-copy-source -v src dist",
-    "precommit": "yarn lint"
+    "precommit": "yarn lint && babel -s inline -d dist/ src/ && flow-copy-source -v src dist"
   }
 }

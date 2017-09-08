@@ -255,3 +255,15 @@ export type TwitterFeedbackWithAnalysisType = {
   ...TwitterFeedbackType,
   analysis: FeedbackAnalysisType,
 };
+
+export type AccountSettingType = {|
+  twitterSearches: string[],
+|};
+
+export const AccountSettingSchema = Joi.object({
+  twitterSearches: Joi.array()
+    .items(Joi.string().required())
+    .required(),
+})
+  .unknown()
+  .required();

@@ -2,6 +2,7 @@
   "author": "Kyle Smith <kyle.r.smiff@gmail.com>",
   "version": "0.1.0",
   "dependencies": {
+    "joi-browser": "^10.6.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -40,7 +41,7 @@
   },
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
-    "lint": "esw ./**.js",
+    "lint": "esw src/**/*.js",
     "precommit": "yarn lint && babel -s inline -d dist/ src/ && flow-copy-source -v src dist"
   }
 }

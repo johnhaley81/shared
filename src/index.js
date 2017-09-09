@@ -256,11 +256,21 @@ export type TwitterFeedbackWithAnalysisType = {
   analysis: FeedbackAnalysisType,
 };
 
-export type AccountSettingType = {|
+export type AccountSettingPostBodyType = {|
   twitterSearches: string[],
 |};
 
-export const AccountSettingSchema = Joi.object({
+export type AccountSettingUnsavedType = {|
+  ...AccountSettingPostBodyType,
+  accountId: string,
+|};
+
+export type AccountSettingType = {
+  ...AccountSettingUnsavedType,
+  ...ModelSavedFieldsType,
+};
+
+export const AccountSettingPostBodySchema = Joi.object({
   twitterSearches: Joi.array()
     .items(Joi.string().required())
     .required(),

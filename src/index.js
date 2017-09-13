@@ -256,6 +256,9 @@ export type TwitterFeedbackWithAnalysisType = {
   analysis: FeedbackAnalysisType,
 };
 
+// currently only 1 tier
+export type AccountTierType = 'free';
+
 export type AccountSettingPostBodyType = {|
   twitterSearches: string[],
 |};
@@ -263,6 +266,10 @@ export type AccountSettingPostBodyType = {|
 export type AccountSettingUnsavedType = {|
   ...AccountSettingPostBodyType,
   accountId: string,
+  feedbackUsageByDate: {
+    [key: YearMonthBucketType]: number,
+  },
+  tier: AccountTierType,
 |};
 
 export type AccountSettingType = {

@@ -231,9 +231,9 @@ export const EmailFeedbackSchema = EmailFeedbackPostBodySchema.keys({
     .default(() => uuid.v4(), 'uuid v4'),
 });
 
-export type EmailFeedbackWithAnalysisType = {
+export type EmailFeedbackWithMaybeAnalysisType = {
   ...EmailFeedbackType,
-  analysis: FeedbackAnalysisType,
+  analysis: ?FeedbackAnalysisType,
 };
 
 export type TwitterFeedbackUnsavedType = {|
@@ -256,9 +256,9 @@ export const TwitterFeedbackSchema = Joi.object({
   .unknown()
   .required();
 
-export type TwitterFeedbackWithAnalysisType = {
+export type TwitterFeedbackWithMaybeAnalysisType = {
   ...TwitterFeedbackType,
-  analysis: FeedbackAnalysisType,
+  analysis: ?FeedbackAnalysisType,
 };
 
 // currently only 1 tier

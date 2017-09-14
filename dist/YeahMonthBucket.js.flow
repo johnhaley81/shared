@@ -1,6 +1,7 @@
 // @flow
 
 import Joi from 'joi-browser';
+import moment from 'moment';
 
 // prettier will remove the surrounding /*:: */ which is needed since other
 // plugins don't fully support flow opague types yet
@@ -27,3 +28,6 @@ const validateEmailPostBody = (
 
 export const getYearMonthBucket = (maybeYMB: string) =>
   validateEmailPostBody(maybeYMB);
+
+export const getCurrentYearMonthBucket = () =>
+  getYearMonthBucket(moment().format('YYYY-MM'));

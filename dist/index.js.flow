@@ -3,6 +3,11 @@
 import Joi from 'joi-browser';
 import uuid from 'uuid';
 
+// https://github.com/benmosher/eslint-plugin-import/issues/921
+/* eslint-disable import/named */
+import type { YearMonthBucketType } from './YearMonthBucket';
+/* eslint-enable */
+
 export type ModelSavedFieldsType = {|
   createdAt: string,
   id: string,
@@ -226,9 +231,9 @@ export const EmailFeedbackSchema = EmailFeedbackPostBodySchema.keys({
     .default(() => uuid.v4(), 'uuid v4'),
 });
 
-export type EmailFeedbackWithAnalysisType = {
+export type EmailFeedbackWithMaybeAnalysisType = {
   ...EmailFeedbackType,
-  analysis: FeedbackAnalysisType,
+  analysis: ?FeedbackAnalysisType,
 };
 
 export type TwitterFeedbackUnsavedType = {|
@@ -251,10 +256,13 @@ export const TwitterFeedbackSchema = Joi.object({
   .unknown()
   .required();
 
-export type TwitterFeedbackWithAnalysisType = {
+export type TwitterFeedbackWithMaybeAnalysisType = {
   ...TwitterFeedbackType,
-  analysis: FeedbackAnalysisType,
+  analysis: ?FeedbackAnalysisType,
 };
+
+// currently only 1 tier
+export type AccountTierType = 'free';
 
 export type AccountSettingPostBodyType = {|
   twitterSearches: string[],
@@ -263,6 +271,10 @@ export type AccountSettingPostBodyType = {|
 export type AccountSettingUnsavedType = {|
   ...AccountSettingPostBodyType,
   accountId: string,
+  feedbackUsageByDate: {
+    [key: YearMonthBucketType]: number,
+  },
+  tier: AccountTierType,
 |};
 
 export type AccountSettingType = {
@@ -272,7 +284,7 @@ export type AccountSettingType = {
 
 export const AccountSettingPostBodySchema = Joi.object({
   twitterSearches: Joi.array()
-    .items(Joi.string().required())
+    .items(Joi.string())
     .required(),
 })
   .unknown()

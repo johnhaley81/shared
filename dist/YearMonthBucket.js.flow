@@ -3,13 +3,7 @@
 import Joi from 'joi-browser';
 import moment from 'moment';
 
-// prettier will remove the surrounding /*:: */ which is needed since other
-// plugins don't fully support flow opague types yet
-/* eslint-disable prettier/prettier */
-/*::
 export opaque type YearMonthBucketType: string = string;
-*/
-/* eslint-enable */
 
 const YearMonthBucketSchema = Joi.string().regex(/^\d{4}-\d{2}$/);
 

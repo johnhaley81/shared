@@ -5,14 +5,29 @@ import uuid from 'uuid';
 
 // https://github.com/benmosher/eslint-plugin-import/issues/921
 /* eslint-disable import/named */
-import type { YearMonthBucketType } from './YearMonthBucket';
+import {
+  YearMonthBucketRegex,
+  type YearMonthBucketType,
+} from './YearMonthBucket';
 /* eslint-enable */
 
 export type ModelSavedFieldsType = {|
+  accountId: string,
   createdAt: string,
   id: string,
   updatedAt?: string,
 |};
+
+const ModelSavedFieldsSchema = {
+  accountId: Joi.string().required(),
+  createdAt: Joi.date()
+    .iso()
+    .required(),
+  id: Joi.string()
+    .guid()
+    .default(() => uuid.v4(), 'uuid v4'),
+  updatedAt: Joi.date().iso(),
+};
 
 export type SupportedLanguageType =
   | 'zh'
@@ -129,7 +144,7 @@ export type FeedbackAnalysisType = {
 };
 
 export const FeedbackAnalysisSchema = Joi.object({
-  accountId: Joi.string().required(),
+  ...ModelSavedFieldsSchema,
   contentSentiment: SentimentSchema.required(),
   documentClassification: Joi.array()
     .items(ClassSchema)
@@ -140,9 +155,6 @@ export const FeedbackAnalysisSchema = Joi.object({
   feedbackType: Joi.string()
     .allow(['email', 'twitter'])
     .required(),
-  id: Joi.string()
-    .guid()
-    .default(() => uuid.v4(), 'uuid v4'),
   sentences: Joi.array()
     .items(
       SentenceSchema.keys({
@@ -225,16 +237,21 @@ export type EmailFeedbackType = {
 };
 
 export const EmailFeedbackSchema = EmailFeedbackPostBodySchema.keys({
-  accountId: Joi.string().required(),
-  id: Joi.string()
-    .guid()
-    .default(() => uuid.v4(), 'uuid v4'),
-});
+  ...ModelSavedFieldsSchema,
+})
+  .unknown()
+  .required();
 
 export type EmailFeedbackWithMaybeAnalysisType = {
   ...EmailFeedbackType,
   analysis: ?FeedbackAnalysisType,
 };
+
+export const EmailFeedbackWithMaybeAnalysisSchema = EmailFeedbackSchema.keys({
+  analysis: FeedbackAnalysisSchema,
+})
+  .unknown()
+  .required();
 
 export type TwitterFeedbackUnsavedType = {|
   accountId: string,
@@ -247,10 +264,7 @@ export type TwitterFeedbackType = {
 };
 
 export const TwitterFeedbackSchema = Joi.object({
-  accountId: Joi.string().required(),
-  id: Joi.string()
-    .guid()
-    .default(() => uuid.v4(), 'uuid v4'),
+  ...ModelSavedFieldsSchema,
   statusId: Joi.string().required(),
 })
   .unknown()
@@ -261,12 +275,28 @@ export type TwitterFeedbackWithMaybeAnalysisType = {
   analysis: ?FeedbackAnalysisType,
 };
 
+export const TwitterFeedbackWithMaybeAnalysisSchema = TwitterFeedbackSchema.keys(
+  {
+    analysis: FeedbackAnalysisSchema,
+  }
+)
+  .unknown()
+  .required();
+
 // currently only 1 tier
 export type AccountTierType = 'free';
 
 export type AccountSettingPostBodyType = {|
   twitterSearches: string[],
 |};
+
+export const AccountSettingPostBodySchema = Joi.object({
+  twitterSearches: Joi.array()
+    .items(Joi.string())
+    .required(),
+})
+  .unknown()
+  .required();
 
 export type AccountSettingUnsavedType = {|
   ...AccountSettingPostBodyType,
@@ -282,10 +312,23 @@ export type AccountSettingType = {
   ...ModelSavedFieldsType,
 };
 
-export const AccountSettingPostBodySchema = Joi.object({
+export const AccountSettingSchema = Joi.object({
+  ...ModelSavedFieldsSchema,
+  feedbackUsageByDate: Joi.object()
+    .pattern(
+      YearMonthBucketRegex,
+      Joi.number()
+        .min(0)
+        .required()
+    )
+    .required(),
+  id: Joi.string().required(),
+  tier: Joi.string()
+    .valid(['free'])
+    .required(),
   twitterSearches: Joi.array()
     .items(Joi.string())
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
 })
   .unknown()
   .required();

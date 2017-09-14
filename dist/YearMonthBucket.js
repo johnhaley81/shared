@@ -1,0 +1,49 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getCurrentYearMonthBucket = exports.getYearMonthBucket = undefined;
+
+var _joiBrowser = require('joi-browser');
+
+var _joiBrowser2 = _interopRequireDefault(_joiBrowser);
+
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// prettier will remove the surrounding /*:: */ which is needed since other
+// plugins don't fully support flow opague types yet
+/* eslint-disable prettier/prettier */
+/*::
+export opaque type YearMonthBucketType: string = string;
+*/
+/* eslint-enable */
+
+var YearMonthBucketSchema = _joiBrowser2.default.string().regex(/^\d{4}-\d{2}$/);
+
+var validateEmailPostBody = function validateEmailPostBody(maybeYMB) {
+  return Promise.resolve().then(function () {
+    var _Joi$validate = _joiBrowser2.default.validate(maybeYMB, YearMonthBucketSchema),
+        error = _Joi$validate.error,
+        value = _Joi$validate.value;
+
+    if (error) {
+      return Promise.reject(error.annotate(true));
+    }
+
+    return value;
+  });
+};
+
+var getYearMonthBucket = exports.getYearMonthBucket = function getYearMonthBucket(maybeYMB) {
+  return validateEmailPostBody(maybeYMB);
+};
+
+var getCurrentYearMonthBucket = exports.getCurrentYearMonthBucket = function getCurrentYearMonthBucket() {
+  return getYearMonthBucket((0, _moment2.default)().format('YYYY-MM'));
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9ZZWFyTW9udGhCdWNrZXQuanMiXSwibmFtZXMiOlsiWWVhck1vbnRoQnVja2V0U2NoZW1hIiwic3RyaW5nIiwicmVnZXgiLCJ2YWxpZGF0ZUVtYWlsUG9zdEJvZHkiLCJtYXliZVlNQiIsIlByb21pc2UiLCJyZXNvbHZlIiwidGhlbiIsInZhbGlkYXRlIiwiZXJyb3IiLCJ2YWx1ZSIsInJlamVjdCIsImFubm90YXRlIiwiZ2V0WWVhck1vbnRoQnVja2V0IiwiZ2V0Q3VycmVudFllYXJNb250aEJ1Y2tldCIsImZvcm1hdCJdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUVBOzs7O0FBQ0E7Ozs7OztBQUVBO0FBQ0E7QUFDQTtBQUNBOzs7QUFHQTs7QUFFQSxJQUFNQSx3QkFBd0IscUJBQUlDLE1BQUosR0FBYUMsS0FBYixDQUFtQixlQUFuQixDQUE5Qjs7QUFFQSxJQUFNQyx3QkFBd0IsU0FBeEJBLHFCQUF3QixDQUM1QkMsUUFENEI7QUFBQSxTQUc1QkMsUUFBUUMsT0FBUixHQUFrQkMsSUFBbEIsQ0FBdUIsWUFBNkM7QUFBQSx3QkFDekMscUJBQUlDLFFBQUosQ0FBYUosUUFBYixFQUF1QkoscUJBQXZCLENBRHlDO0FBQUEsUUFDMURTLEtBRDBELGlCQUMxREEsS0FEMEQ7QUFBQSxRQUNuREMsS0FEbUQsaUJBQ25EQSxLQURtRDs7QUFHbEUsUUFBSUQsS0FBSixFQUFXO0FBQ1QsYUFBT0osUUFBUU0sTUFBUixDQUFlRixNQUFNRyxRQUFOLENBQWUsSUFBZixDQUFmLENBQVA7QUFDRDs7QUFFRCxXQUFPRixLQUFQO0FBQ0QsR0FSRCxDQUg0QjtBQUFBLENBQTlCOztBQWFPLElBQU1HLGtEQUFxQixTQUFyQkEsa0JBQXFCLENBQUNULFFBQUQ7QUFBQSxTQUNoQ0Qsc0JBQXNCQyxRQUF0QixDQURnQztBQUFBLENBQTNCOztBQUdBLElBQU1VLGdFQUE0QixTQUE1QkEseUJBQTRCO0FBQUEsU0FDdkNELG1CQUFtQix3QkFBU0UsTUFBVCxDQUFnQixTQUFoQixDQUFuQixDQUR1QztBQUFBLENBQWxDIiwiZmlsZSI6IlllYXJNb250aEJ1Y2tldC5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8vIEBmbG93XG5cbmltcG9ydCBKb2kgZnJvbSAnam9pLWJyb3dzZXInO1xuaW1wb3J0IG1vbWVudCBmcm9tICdtb21lbnQnO1xuXG4vLyBwcmV0dGllciB3aWxsIHJlbW92ZSB0aGUgc3Vycm91bmRpbmcgLyo6OiAqLyB3aGljaCBpcyBuZWVkZWQgc2luY2Ugb3RoZXJcbi8vIHBsdWdpbnMgZG9uJ3QgZnVsbHkgc3VwcG9ydCBmbG93IG9wYWd1ZSB0eXBlcyB5ZXRcbi8qIGVzbGludC1kaXNhYmxlIHByZXR0aWVyL3ByZXR0aWVyICovXG4vKjo6XG5leHBvcnQgb3BhcXVlIHR5cGUgWWVhck1vbnRoQnVja2V0VHlwZTogc3RyaW5nID0gc3RyaW5nO1xuKi9cbi8qIGVzbGludC1lbmFibGUgKi9cblxuY29uc3QgWWVhck1vbnRoQnVja2V0U2NoZW1hID0gSm9pLnN0cmluZygpLnJlZ2V4KC9eXFxkezR9LVxcZHsyfSQvKTtcblxuY29uc3QgdmFsaWRhdGVFbWFpbFBvc3RCb2R5ID0gKFxuICBtYXliZVlNQjogc3RyaW5nXG4pOiBQcm9taXNlPFllYXJNb250aEJ1Y2tldFR5cGU+ID0+XG4gIFByb21pc2UucmVzb2x2ZSgpLnRoZW4oKCk6IFByb21pc2U8c3RyaW5nPiB8IFllYXJNb250aEJ1Y2tldFR5cGUgPT4ge1xuICAgIGNvbnN0IHsgZXJyb3IsIHZhbHVlIH0gPSBKb2kudmFsaWRhdGUobWF5YmVZTUIsIFllYXJNb250aEJ1Y2tldFNjaGVtYSk7XG5cbiAgICBpZiAoZXJyb3IpIHtcbiAgICAgIHJldHVybiBQcm9taXNlLnJlamVjdChlcnJvci5hbm5vdGF0ZSh0cnVlKSk7XG4gICAgfVxuXG4gICAgcmV0dXJuIHZhbHVlO1xuICB9KTtcblxuZXhwb3J0IGNvbnN0IGdldFllYXJNb250aEJ1Y2tldCA9IChtYXliZVlNQjogc3RyaW5nKSA9PlxuICB2YWxpZGF0ZUVtYWlsUG9zdEJvZHkobWF5YmVZTUIpO1xuXG5leHBvcnQgY29uc3QgZ2V0Q3VycmVudFllYXJNb250aEJ1Y2tldCA9ICgpID0+XG4gIGdldFllYXJNb250aEJ1Y2tldChtb21lbnQoKS5mb3JtYXQoJ1lZWVktTU0nKSk7XG4iXX0=

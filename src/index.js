@@ -5,7 +5,7 @@ import uuid from 'uuid';
 
 // https://github.com/benmosher/eslint-plugin-import/issues/921
 /* eslint-disable import/named */
-import { type YearMonthBucketType } from './YeahMonthBucket';
+import type { YearMonthBucketType } from './YearMonthBucket';
 /* eslint-enable */
 
 export type ModelSavedFieldsType = {|

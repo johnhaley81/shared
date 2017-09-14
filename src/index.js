@@ -284,7 +284,7 @@ export type AccountSettingType = {
 
 export const AccountSettingPostBodySchema = Joi.object({
   twitterSearches: Joi.array()
-    .items(Joi.string().required())
+    .items(Joi.string())
     .required(),
 })
   .unknown()

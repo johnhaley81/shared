@@ -1,5 +1,5 @@
-// flow-typed signature: 2802d51e7a5928c71ad0ec15c04eee69
-// flow-typed version: 0a3eb229b8/joi-browser_v10.x.x/flow_>=v0.28.x
+// flow-typed signature: 2955a167810c167a284c6bfeeff0955f
+// flow-typed version: 3c5da9fb7a/joi-browser_v10.x.x/flow_>=v0.28.x
 
 // Doesn't include NaN
 type FalsyValue = "" | 0 | void | null | false;
@@ -320,7 +320,7 @@ declare module "joi-browser" {
     binary(): npm$joiBrowser$BinarySchema,
     bool(): npm$joiBrowser$BooleanSchema,
     boolean(): npm$joiBrowser$BooleanSchema,
-    compile(schema: Object): npm$joiBrowser$Schema,
+    compile(schema: Object | mixed[]): npm$joiBrowser$Schema,
     date(): npm$joiBrowser$DateSchema,
     func(): npm$joiBrowser$FunctionSchema,
     number(): npm$joiBrowser$NumberSchema,

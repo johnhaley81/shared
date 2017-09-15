@@ -120,6 +120,34 @@ export const SentimentAnalysisResponseSchema = Joi.object({
 
 export type FeedbackType = 'email' | 'twitter';
 
+export type TwitterUserType = {|
+  avatarUrl: string,
+  id: string,
+  username: string,
+|};
+
+export const TwitterUserSchema = Joi.object({
+  avatarUrl: Joi.string()
+    .uri()
+    .required(),
+  id: Joi.string().required(),
+  username: Joi.string().required(),
+}).unknown();
+
+export type EmailUserType = {|
+  id: string,
+|};
+
+export const EmailUserSchema = Joi.object({
+  id: Joi.string()
+    .email()
+    .required(),
+}).unknown();
+
+export type UserType = EmailUserType | TwitterUserType;
+
+export const UserSchema = Joi.compile([TwitterUserSchema, EmailUserSchema]);
+
 export type FeedbackSentimentAndClassificationType = {|
   contentSentiment: SentimentType,
   documentClassification: ClassType[],
@@ -136,6 +164,8 @@ export type FeedbackAnalysisUnsavedType = {|
   accountId: string,
   feedbackId: string,
   feedbackType: FeedbackType,
+  user: UserType,
+  userId: string,
 |};
 
 export type FeedbackAnalysisType = {
@@ -170,6 +200,8 @@ export const FeedbackAnalysisSchema = Joi.object({
   topSentenceClasses: Joi.array()
     .items(Joi.string())
     .required(),
+  user: UserSchema,
+  userId: Joi.string().required(),
 })
   .unknown()
   .required();
@@ -256,6 +288,7 @@ export const EmailFeedbackWithMaybeAnalysisSchema = EmailFeedbackSchema.keys({
 export type TwitterFeedbackUnsavedType = {|
   accountId: string,
   statusId: string,
+  user: TwitterUserType,
 |};
 
 export type TwitterFeedbackType = {
@@ -266,6 +299,7 @@ export type TwitterFeedbackType = {
 export const TwitterFeedbackSchema = Joi.object({
   ...ModelSavedFieldsSchema,
   statusId: Joi.string().required(),
+  user: TwitterUserSchema.required(),
 })
   .unknown()
   .required();

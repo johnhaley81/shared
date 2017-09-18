@@ -5,7 +5,8 @@ import moment from 'moment';
 
 export opaque type YearMonthBucketType: string = string;
 
-const YearMonthBucketSchema = Joi.string().regex(/^\d{4}-\d{2}$/);
+export const YearMonthBucketRegex = /^\d{4}-\d{2}$/;
+export const YearMonthBucketSchema = Joi.string().regex(YearMonthBucketRegex);
 
 const validateEmailPostBody = (
   maybeYMB: string

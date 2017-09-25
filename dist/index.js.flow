@@ -115,7 +115,7 @@ export const SentimentAnalysisResponseSchema = Joi.object({
   language: SupportedLanguageSchema.required(),
   sentences: Joi.array()
     .items(SentenceSchema)
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
 }).unknown();
 
 export type FeedbackType = 'email' | 'twitter';
@@ -178,7 +178,7 @@ export const FeedbackAnalysisSchema = Joi.object({
   contentSentiment: SentimentSchema.required(),
   documentClassification: Joi.array()
     .items(ClassSchema)
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   feedbackId: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
@@ -190,16 +190,19 @@ export const FeedbackAnalysisSchema = Joi.object({
       SentenceSchema.keys({
         classification: Joi.array()
           .items(ClassSchema)
-          .required(),
+          .default(
+            () => [],
+            'Do not allow undefined or null to come out of the DB'
+          ),
       }).required()
     )
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   topDocumentClasses: Joi.array()
     .items(Joi.string())
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   topSentenceClasses: Joi.array()
     .items(Joi.string())
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   user: UserSchema,
   userId: Joi.string().required(),
 })
@@ -225,7 +228,7 @@ export const WatsonClassifyResponseSchema = Joi.object({
           .required(),
       }).unknown()
     )
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   classifier_id: Joi.string().required(),
   text: Joi.string().required(),
   top_class: Joi.string().required(),
@@ -327,7 +330,7 @@ export type AccountSettingPostBodyType = {|
 export const AccountSettingPostBodySchema = Joi.object({
   twitterSearches: Joi.array()
     .items(Joi.string())
-    .required(),
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
 })
   .unknown()
   .required();

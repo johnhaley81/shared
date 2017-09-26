@@ -20,13 +20,13 @@ export type ModelSavedFieldsType = {|
 
 const ModelSavedFieldsSchema = {
   accountId: Joi.string().required(),
-  createdAt: Joi.date()
-    .iso()
+  createdAt: Joi.string()
+    .isoDate()
     .required(),
   id: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
-  updatedAt: Joi.date().iso(),
+  updatedAt: Joi.string().isoDate(),
 };
 
 export type SupportedLanguageType =

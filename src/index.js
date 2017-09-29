@@ -81,13 +81,13 @@ export const SentimentSchema = Joi.object({
     .required(),
 }).unknown();
 
-export type ClassType = {
-  className: string,
+export type CategoryConfidenceType = {
+  categoryName: string,
   confidence: number,
 };
 
-export const ClassSchema = Joi.object({
-  className: Joi.string().required(),
+export const CategorySchema = Joi.object({
+  categoryName: Joi.string().required(),
   confidence: Joi.number()
     .min(0)
     .max(1)
@@ -148,19 +148,19 @@ export type UserType = EmailUserType | TwitterUserType;
 
 export const UserSchema = Joi.compile([TwitterUserSchema, EmailUserSchema]);
 
-export type FeedbackSentimentAndClassificationType = {|
+export type FeedbackSentimentAndCategorizationType = {|
   contentSentiment: SentimentType,
-  documentClassification: ClassType[],
+  documentCategorization: CategoryConfidenceType[],
   sentences: Array<{
-    classification: ClassType,
+    category: CategoryConfidenceType,
     ...SentenceType,
   }>,
-  topDocumentClasses: Array<string>,
-  topSentenceClasses: Array<string>,
+  topDocumentCategories: Array<string>,
+  topSentenceCategories: Array<string>,
 |};
 
 export type FeedbackAnalysisUnsavedType = {|
-  ...FeedbackSentimentAndClassificationType,
+  ...FeedbackSentimentAndCategorizationType,
   accountId: string,
   feedbackId: string,
   feedbackType: FeedbackType,
@@ -176,8 +176,8 @@ export type FeedbackAnalysisType = {
 export const FeedbackAnalysisSchema = Joi.object({
   ...ModelSavedFieldsSchema,
   contentSentiment: SentimentSchema.required(),
-  documentClassification: Joi.array()
-    .items(ClassSchema)
+  documentCategorization: Joi.array()
+    .items(CategorySchema)
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   feedbackId: Joi.string()
     .guid()
@@ -188,8 +188,8 @@ export const FeedbackAnalysisSchema = Joi.object({
   sentences: Joi.array()
     .items(
       SentenceSchema.keys({
-        classification: Joi.array()
-          .items(ClassSchema)
+        categorization: Joi.array()
+          .items(CategorySchema)
           .default(
             () => [],
             'Do not allow undefined or null to come out of the DB'
@@ -197,10 +197,10 @@ export const FeedbackAnalysisSchema = Joi.object({
       }).required()
     )
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-  topDocumentClasses: Joi.array()
+  topDocumentCategories: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-  topSentenceClasses: Joi.array()
+  topSentenceCategories: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   user: UserSchema,

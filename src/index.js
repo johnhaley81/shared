@@ -183,7 +183,7 @@ export const FeedbackAnalysisSchema = Joi.object({
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
   feedbackType: Joi.string()
-    .allow(['email', 'twitter'])
+    .valid(['email', 'twitter'])
     .required(),
   sentences: Joi.array()
     .items(
@@ -279,11 +279,15 @@ export const EmailFeedbackSchema = EmailFeedbackPostBodySchema.keys({
 
 export type EmailFeedbackWithMaybeAnalysisType = {
   ...EmailFeedbackType,
-  analysis: ?FeedbackAnalysisType,
+  analysis: ?({ feedbackType: 'email' } & FeedbackAnalysisType),
 };
 
 export const EmailFeedbackWithMaybeAnalysisSchema = EmailFeedbackSchema.keys({
-  analysis: FeedbackAnalysisSchema,
+  analysis: FeedbackAnalysisSchema.keys({
+    feedbackType: Joi.string()
+      .valid(['email'])
+      .required(),
+  }),
 })
   .unknown()
   .required();
@@ -309,12 +313,16 @@ export const TwitterFeedbackSchema = Joi.object({
 
 export type TwitterFeedbackWithMaybeAnalysisType = {
   ...TwitterFeedbackType,
-  analysis: ?FeedbackAnalysisType,
+  analysis: ?({ feedbackType: 'twitter' } & FeedbackAnalysisType),
 };
 
 export const TwitterFeedbackWithMaybeAnalysisSchema = TwitterFeedbackSchema.keys(
   {
-    analysis: FeedbackAnalysisSchema,
+    analysis: FeedbackAnalysisSchema.keys({
+      feedbackType: Joi.string()
+        .valid(['twitter'])
+        .required(),
+    }),
   }
 )
   .unknown()

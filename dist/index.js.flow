@@ -66,10 +66,10 @@ export const TextSpanSchema = Joi.object({
   content: Joi.string().required(),
 }).unknown();
 
-export type SentimentType = {
+export type SentimentType = {|
   magnitude: number,
   score: number,
-};
+|};
 
 export const SentimentSchema = Joi.object({
   magnitude: Joi.number()

@@ -94,10 +94,10 @@ export const CategorySchema = Joi.object({
     .required(),
 }).unknown();
 
-export type SentenceType = {
+export type SentenceType = {|
   sentiment: SentimentType,
   text: TextSpanType,
-};
+|};
 
 export const SentenceSchema = Joi.object({
   sentiment: SentimentSchema.required(),

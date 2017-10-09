@@ -320,8 +320,7 @@ export const TwitterFeedbackWithMaybeAnalysisSchema = TwitterFeedbackSchema.keys
   .unknown()
   .required();
 
-// currently only 1 tier
-export type AccountTierType = 'free';
+export type AccountTierType = 'notApproved' | 'free';
 
 export type AccountSettingPostBodyType = {|
   twitterSearches: string[],
@@ -361,7 +360,7 @@ export const AccountSettingSchema = Joi.object({
     .required(),
   id: Joi.string().required(),
   tier: Joi.string()
-    .valid(['free'])
+    .valid(['notApproved', 'free'])
     .required(),
   twitterSearches: Joi.array()
     .items(Joi.string())

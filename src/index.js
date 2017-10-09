@@ -152,7 +152,7 @@ export type FeedbackSentimentAndCategorizationType = {|
   contentSentiment: SentimentType,
   documentCategorization: CategoryConfidenceType[],
   sentences: Array<{
-    category: CategoryConfidenceType,
+    categorization: CategoryConfidenceType[],
     ...SentenceType,
   }>,
   topDocumentCategories: Array<string>,

@@ -322,6 +322,37 @@ export const TwitterFeedbackWithMaybeAnalysisSchema = TwitterFeedbackSchema.keys
 
 export type AccountTierType = 'notApproved' | 'free';
 
+export type AccountIntegrationStatusType =
+  | 'disconnected'
+  | 'awaitingApproval'
+  | 'connected';
+
+export type AccountIntegrationType = {|
+  status: AccountIntegrationStatusType,
+  token?: string,
+|};
+
+export type ZenDeskIntegrationType = {
+  ...AccountIntegrationType,
+  subdomain: string,
+};
+
+export const AccountIntegrationSchema = Joi.object({
+  status: Joi.string()
+    .valid(['disconnected', 'awaitingApproval', 'connected'])
+    .required(),
+  token: Joi.string().required(),
+})
+  .optionalKeys('token')
+  .unknown()
+  .required();
+
+export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
+  subdomain: Joi.string()
+    .allow('')
+    .required(),
+});
+
 export type AccountSettingPostBodyType = {|
   twitterSearches: string[],
 |};
@@ -339,6 +370,10 @@ export type AccountSettingUnsavedType = {|
   accountId: string,
   feedbackUsageByDate: {
     [key: YearMonthBucketType]: number,
+  },
+
+  integrations: {
+    zenDesk: ZenDeskIntegrationType,
   },
   tier: AccountTierType,
 |};
@@ -359,6 +394,7 @@ export const AccountSettingSchema = Joi.object({
     )
     .required(),
   id: Joi.string().required(),
+  integrations: Joi.object({ zenDesk: ZenDeskIntegrationSchema }).required(),
   tier: Joi.string()
     .valid(['notApproved', 'free'])
     .required(),

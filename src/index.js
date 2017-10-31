@@ -11,6 +11,13 @@ import {
 } from './YearMonthBucket';
 /* eslint-enable */
 
+export {
+  getAnalyzeFeedbackSNS,
+  getAnalyzeFeedbackTopicName,
+  getTableNamePrefix,
+  getDynamoDbGlobalArn,
+} from './Arns';
+
 export type ModelSavedFieldsType = {|
   accountId: string,
   createdAt: string,

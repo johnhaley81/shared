@@ -342,6 +342,10 @@ export type AccountIntegrationType = {|
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
   subdomain: string,
+  ticketImport: {
+    inProgress: boolean,
+    nextPage: number,
+  },
 };
 
 export const AccountIntegrationSchema = Joi.object({
@@ -357,6 +361,18 @@ export const AccountIntegrationSchema = Joi.object({
 export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
   subdomain: Joi.string()
     .allow('')
+    .required(),
+  ticketImport: Joi.object({
+    inProgress: Joi.boolean().default(
+      false,
+      'No import in progress when created'
+    ),
+    nextPage: Joi.number().default(
+      0,
+      'Defaults to Unix Epoch as the next page'
+    ),
+  })
+    .unknown()
     .required(),
 });
 

@@ -410,6 +410,7 @@ export const WatsonClassifierSchema = Joi.object({
 export type AccountSettingUnsavedType = {|
   ...AccountSettingPostBodyType,
   accountId: string,
+  apiToken: string,
   feedbackUsageByDate: {
     [key: YearMonthBucketType]: number,
   },
@@ -427,6 +428,7 @@ export type AccountSettingType = {
 
 export const AccountSettingSchema = Joi.object({
   ...ModelSavedFieldsSchema,
+  apiToken: Joi.string().guid(),
   feedbackUsageByDate: Joi.object()
     .pattern(
       YearMonthBucketRegex,

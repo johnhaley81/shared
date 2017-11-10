@@ -363,17 +363,14 @@ export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
     .allow('')
     .required(),
   ticketImport: Joi.object({
-    inProgress: Joi.boolean().default(
-      false,
-      'No import in progress when created'
-    ),
-    nextPage: Joi.number().default(
-      0,
-      'Defaults to Unix Epoch as the next page'
-    ),
+    inProgress: Joi.boolean().required(),
+    nextPage: Joi.number().required(),
   })
     .unknown()
-    .required(),
+    .default(
+      { inProgress: false, nextPage: 0 },
+      'Defaults to no in progress import and Unix Epoch as the next page'
+    ),
 });
 
 export type AccountSettingPostBodyType = {|

@@ -125,7 +125,21 @@ export const SentimentAnalysisResponseSchema = Joi.object({
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
 }).unknown();
 
-export type FeedbackType = 'email' | 'twitter';
+export type FeedbackType = 'email' | 'twitter' | 'zenDesk';
+
+export type ZenDeskUserType = {|
+  email: string,
+  id: number,
+  name: string,
+|};
+
+export const ZenDeskUserSchema = Joi.object({
+  email: Joi.string().email(),
+  id: Joi.number()
+    .min(0)
+    .required(),
+  name: Joi.string().required(),
+}).unknown();
 
 export type TwitterUserType = {|
   avatarUrl: string,
@@ -151,9 +165,13 @@ export const EmailUserSchema = Joi.object({
     .required(),
 }).unknown();
 
-export type UserType = EmailUserType | TwitterUserType;
+export type UserType = EmailUserType | TwitterUserType | ZenDeskUserType;
 
-export const UserSchema = Joi.compile([TwitterUserSchema, EmailUserSchema]);
+export const UserSchema = Joi.compile([
+  TwitterUserSchema,
+  EmailUserSchema,
+  ZenDeskUserSchema,
+]);
 
 export type FeedbackSentimentAndCategorizationType = {|
   contentSentiment: SentimentType,
@@ -190,7 +208,7 @@ export const FeedbackAnalysisSchema = Joi.object({
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
   feedbackType: Joi.string()
-    .allow(['email', 'twitter'])
+    .allow(['email', 'twitter', 'zenDesk'])
     .required(),
   sentences: Joi.array()
     .items(
@@ -295,6 +313,49 @@ export const EmailFeedbackWithMaybeAnalysisSchema = EmailFeedbackSchema.keys({
   .unknown()
   .required();
 
+export type ZenDeskTicketPostBodyType = {|
+  description: string,
+  ticketId: number,
+  title: string,
+  user: ZenDeskUserType,
+|};
+
+export const ZenDeskTicketPostBodySchema = Joi.object({
+  description: Joi.string().required(),
+  ticketId: Joi.number().required(),
+  title: Joi.string().required(),
+  user: ZenDeskUserSchema.required(),
+})
+  .unknown()
+  .required();
+
+export type ZenDeskTicketUnsavedType = {|
+  ...ZenDeskTicketPostBodyType,
+  accountId: string,
+|};
+
+export type ZenDeskTicketType = {|
+  ...ZenDeskTicketUnsavedType,
+  ...ModelSavedFieldsType,
+|};
+
+export const ZenDeskTicketSchema = ZenDeskTicketPostBodySchema.keys({
+  ...ModelSavedFieldsSchema,
+})
+  .unknown()
+  .required();
+
+export type ZenDeskTicketWithMaybeAnalysisType = {
+  ...ZenDeskTicketType,
+  analysis: ?FeedbackAnalysisType,
+};
+
+export const ZenDeskTicketWithMaybeAnalysisSchema = ZenDeskUserSchema.keys({
+  analysis: FeedbackAnalysisSchema,
+})
+  .unknown()
+  .required();
+
 export type TwitterFeedbackUnsavedType = {|
   accountId: string,
   statusId: string,
@@ -341,6 +402,7 @@ export type AccountIntegrationType = {|
 
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
+  fieldId: ?number,
   subdomain: string,
   ticketImport: {
     inProgress: boolean,
@@ -359,6 +421,7 @@ export const AccountIntegrationSchema = Joi.object({
   .required();
 
 export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
+  fieldId: Joi.number(),
   subdomain: Joi.string()
     .allow('')
     .required(),

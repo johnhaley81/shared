@@ -385,17 +385,39 @@ export const AccountSettingPostBodySchema = Joi.object({
   .unknown()
   .required();
 
+export type WatsonClassifierType = {|
+  classifier_id: string,
+  created: string,
+  language: string,
+  name: string,
+  status: 'Non Existent' | 'Training' | 'Failed' | 'Available' | 'Unavailable',
+  status_description: string,
+  url: string,
+|};
+
+export const WatsonClassifierSchema = Joi.object({
+  classifier_id: Joi.string().required(),
+  created: Joi.string().required(),
+  language: Joi.string().required(),
+  name: Joi.string().required(),
+  status: Joi.string()
+    .valid(['Non Existent', 'Training', 'Failed', 'Available', 'Unavailable'])
+    .required(),
+  status_description: Joi.string().required(),
+  url: Joi.string().required(),
+});
+
 export type AccountSettingUnsavedType = {|
   ...AccountSettingPostBodyType,
   accountId: string,
   feedbackUsageByDate: {
     [key: YearMonthBucketType]: number,
   },
-
   integrations: {
     zenDesk: ZenDeskIntegrationType,
   },
   tier: AccountTierType,
+  watsonClassifier: ?WatsonClassifierType,
 |};
 
 export type AccountSettingType = {
@@ -421,6 +443,7 @@ export const AccountSettingSchema = Joi.object({
   twitterSearches: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
+  watsonClassifier: WatsonClassifierSchema,
 })
   .unknown()
   .required();

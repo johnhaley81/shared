@@ -413,27 +413,24 @@ export type ZenDeskIntegrationType = {
 export const AccountIntegrationSchema = Joi.object({
   status: Joi.string()
     .valid(['disconnected', 'awaitingApproval', 'connected'])
-    .required(),
+    .default('disconnected'),
   token: Joi.string().required(),
 })
   .optionalKeys('token')
   .unknown()
-  .required();
+  .default();
 
 export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
   fieldId: Joi.number(),
   subdomain: Joi.string()
     .allow('')
-    .required(),
+    .default(''),
   ticketImport: Joi.object({
-    inProgress: Joi.boolean().required(),
-    nextPage: Joi.number().required(),
+    inProgress: Joi.boolean().default(false),
+    nextPage: Joi.number().default(0),
   })
     .unknown()
-    .default(
-      { inProgress: false, nextPage: 0 },
-      'Defaults to no in progress import and Unix Epoch as the next page'
-    ),
+    .default(),
 });
 
 export type AccountSettingPostBodyType = {|
@@ -501,10 +498,12 @@ export const AccountSettingSchema = Joi.object({
     )
     .required(),
   id: Joi.string().required(),
-  integrations: Joi.object({ zenDesk: ZenDeskIntegrationSchema }).required(),
+  integrations: Joi.object({
+    zenDesk: ZenDeskIntegrationSchema,
+  }).default(),
   tier: Joi.string()
     .valid(['notApproved', 'free'])
-    .required(),
+    .default('notApproved'),
   twitterSearches: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),

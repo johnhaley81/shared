@@ -43,6 +43,6 @@
   "repository": "git@github.com:hashbackio/shared.git",
   "scripts": {
     "lint": "esw src/**/*.js",
-    "precommit": "yarn lint && babel -s inline -d dist/ src/ && flow-copy-source -v src dist"
+    "precommit": "yarn lint && babel -s inline -d dist/ src/ && flow-copy-source -v src dist && git add dist/*"
   }
 }

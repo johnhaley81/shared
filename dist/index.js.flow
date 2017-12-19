@@ -109,6 +109,10 @@ export const SentimentAnalysisResponseSchema = Joi.object({
 
 export type FeedbackType = 'email' | 'twitter' | 'zenDesk';
 
+export const FeedbackTypesSchema = Joi.string()
+  .allow(['email', 'twitter', 'zenDesk'])
+  .required();
+
 export type ZenDeskUserType = {|
   email: string,
   id: number,
@@ -186,9 +190,7 @@ export const FeedbackAnalysisSchema = Joi.object({
   feedbackId: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
-  feedbackType: Joi.string()
-    .allow(['email', 'twitter', 'zenDesk'])
-    .required(),
+  feedbackType: FeedbackTypesSchema,
   topDocumentCategories: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
@@ -366,7 +368,7 @@ export type AccountIntegrationType = {|
 
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
-  fieldId: ?number,
+  fieldId?: number,
   subdomain: string,
   ticketImport: {
     inProgress: boolean,
@@ -475,3 +477,15 @@ export const AccountSettingSchema = Joi.object({
 })
   .unknown()
   .required();
+
+export const isPositiveFeedbackAnalysis = ({
+  contentSentiment: { positive },
+}: FeedbackAnalysisType) => positive > 0.65;
+
+export const isNegativeFeedbackAnalysis = ({
+  contentSentiment: { negative },
+}: FeedbackAnalysisType) => negative > 0.65;
+
+export const isNeutralFeedbackAnalysis = (feedback: FeedbackAnalysisType) =>
+  !isNegativeFeedbackAnalysis(feedback) &&
+  !isPositiveFeedbackAnalysis(feedback);

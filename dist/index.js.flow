@@ -164,6 +164,7 @@ export type FeedbackSentimentAndCategorizationType = {|
 export type FeedbackAnalysisUnsavedType = {|
   ...FeedbackSentimentAndCategorizationType,
   accountId: string,
+  content: string,
   feedbackId: string,
   feedbackType: FeedbackType,
   user: UserType,
@@ -177,6 +178,7 @@ export type FeedbackAnalysisType = {
 
 export const FeedbackAnalysisSchema = Joi.object({
   ...ModelSavedFieldsSchema,
+  content: Joi.string().required(),
   contentSentiment: SentimentSchema.required(),
   documentCategorization: Joi.array()
     .items(CategorySchema)

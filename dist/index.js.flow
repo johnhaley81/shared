@@ -109,7 +109,9 @@ export const SentimentAnalysisResponseSchema = Joi.object({
 
 export type FeedbackType = 'email' | 'twitter' | 'zenDesk';
 
-export const feedbackTypes = ['email', 'twitter', 'zenDesk'];
+export const FeedbackTypesSchema = Joi.string()
+  .allow(['email', 'twitter', 'zenDesk'])
+  .required();
 
 export type ZenDeskUserType = {|
   email: string,
@@ -188,9 +190,7 @@ export const FeedbackAnalysisSchema = Joi.object({
   feedbackId: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
-  feedbackType: Joi.string()
-    .allow(feedbackTypes)
-    .required(),
+  feedbackType: FeedbackTypesSchema,
   topDocumentCategories: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),

@@ -368,7 +368,7 @@ export type AccountIntegrationType = {|
 
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
-  fieldId: ?number,
+  fieldId?: number,
   subdomain: string,
   ticketImport: {
     inProgress: boolean,

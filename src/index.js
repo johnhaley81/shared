@@ -477,3 +477,15 @@ export const AccountSettingSchema = Joi.object({
 })
   .unknown()
   .required();
+
+export const isPositiveFeedbackAnalysis = ({
+  contentSentiment: { positive },
+}: FeedbackAnalysisType) => positive > 0.65;
+
+export const isNegativeFeedbackAnalysis = ({
+  contentSentiment: { negative },
+}: FeedbackAnalysisType) => negative > 0.65;
+
+export const isNeutralFeedbackAnalysis = (feedback: FeedbackAnalysisType) =>
+  !isNegativeFeedbackAnalysis(feedback) &&
+  !isPositiveFeedbackAnalysis(feedback);

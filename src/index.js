@@ -436,10 +436,20 @@ export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
 });
 
 export type AccountSettingPostBodyType = {|
-  twitterSearches: string[],
+  integrations?: {|
+    zenDesk: {|
+      confidenceThreshold: number,
+    |},
+  |},
+  twitterSearches?: string[],
 |};
 
 export const AccountSettingPostBodySchema = Joi.object({
+  integrations: Joi.object({
+    zenDesk: Joi.object({
+      confidenceThreshold: Joi.number(),
+    }),
+  }),
   twitterSearches: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
@@ -470,7 +480,6 @@ export const WatsonClassifierSchema = Joi.object({
 });
 
 export type AccountSettingUnsavedType = {|
-  ...AccountSettingPostBodyType,
   accountId: string,
   apiToken: ?string,
   feedbackUsageByDate: {
@@ -480,6 +489,7 @@ export type AccountSettingUnsavedType = {|
     zenDesk: ZenDeskIntegrationType,
   },
   tier: AccountTierType,
+  twitterSearches?: string[],
   watsonClassifier: ?WatsonClassifierType,
 |};
 

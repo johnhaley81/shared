@@ -402,6 +402,7 @@ export type AccountIntegrationType = {|
 
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
+  confidenceThreshold: number,
   fieldId: ?number,
   subdomain: string,
   ticketImport: {
@@ -421,6 +422,7 @@ export const AccountIntegrationSchema = Joi.object({
   .default();
 
 export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
+  confidenceThreshold: Joi.number(),
   fieldId: Joi.number(),
   subdomain: Joi.string()
     .allow('')

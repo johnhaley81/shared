@@ -403,7 +403,7 @@ export type AccountIntegrationType = {|
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
   confidenceThreshold: number,
-  fieldId: ?number,
+  fieldId?: number,
   subdomain: string,
   ticketImport: {
     inProgress: boolean,

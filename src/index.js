@@ -61,6 +61,11 @@ export const SupportedLanguageSchema = Joi.string().valid([
   'es',
 ]);
 
+type TextSpanType = {
+  beginOffset: number,
+  content: string,
+};
+
 export const TextSpanSchema = Joi.object({
   beginOffset: Joi.number()
     .min(-1)
@@ -69,17 +74,16 @@ export const TextSpanSchema = Joi.object({
 }).unknown();
 
 export type SentimentType = {|
-  negative: number,
-  positive: number,
+  magnitude: number,
+  score: number,
 |};
 
 export const SentimentSchema = Joi.object({
-  negative: Joi.number()
+  magnitude: Joi.number()
     .min(0)
-    .max(1)
     .required(),
-  positive: Joi.number()
-    .min(0)
+  score: Joi.number()
+    .min(-1)
     .max(1)
     .required(),
 }).unknown();
@@ -97,21 +101,31 @@ export const CategorySchema = Joi.object({
     .required(),
 }).unknown();
 
+export type SentenceType = {|
+  sentiment: SentimentType,
+  text: TextSpanType,
+|};
+
+export const SentenceSchema = Joi.object({
+  sentiment: SentimentSchema.required(),
+  text: TextSpanSchema.required(),
+}).unknown();
+
 export type SentimentAnalysisResponseType = {|
   documentSentiment: SentimentType,
   language: SupportedLanguageType,
+  sentences: SentenceType[],
 |};
 
 export const SentimentAnalysisResponseSchema = Joi.object({
   documentSentiment: SentimentSchema.required(),
   language: SupportedLanguageSchema.required(),
+  sentences: Joi.array()
+    .items(SentenceSchema)
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
 }).unknown();
 
 export type FeedbackType = 'email' | 'twitter' | 'zenDesk';
-
-export const FeedbackTypesSchema = Joi.string()
-  .allow(['email', 'twitter', 'zenDesk'])
-  .required();
 
 export type ZenDeskUserType = {|
   email: string,
@@ -162,13 +176,17 @@ export const UserSchema = Joi.compile([
 export type FeedbackSentimentAndCategorizationType = {|
   contentSentiment: SentimentType,
   documentCategorization: CategoryConfidenceType[],
+  sentences: Array<{
+    categorization: CategoryConfidenceType[],
+    ...SentenceType,
+  }>,
   topDocumentCategories: Array<string>,
+  topSentenceCategories: Array<string>,
 |};
 
 export type FeedbackAnalysisUnsavedType = {|
   ...FeedbackSentimentAndCategorizationType,
   accountId: string,
-  content: string,
   feedbackId: string,
   feedbackType: FeedbackType,
   user: UserType,
@@ -182,7 +200,6 @@ export type FeedbackAnalysisType = {
 
 export const FeedbackAnalysisSchema = Joi.object({
   ...ModelSavedFieldsSchema,
-  content: Joi.string().required(),
   contentSentiment: SentimentSchema.required(),
   documentCategorization: Joi.array()
     .items(CategorySchema)
@@ -190,8 +207,25 @@ export const FeedbackAnalysisSchema = Joi.object({
   feedbackId: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
-  feedbackType: FeedbackTypesSchema,
+  feedbackType: Joi.string()
+    .allow(['email', 'twitter', 'zenDesk'])
+    .required(),
+  sentences: Joi.array()
+    .items(
+      SentenceSchema.keys({
+        categorization: Joi.array()
+          .items(CategorySchema)
+          .default(
+            () => [],
+            'Do not allow undefined or null to come out of the DB'
+          ),
+      }).required()
+    )
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   topDocumentCategories: Joi.array()
+    .items(Joi.string())
+    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
+  topSentenceCategories: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   user: UserSchema,
@@ -368,6 +402,7 @@ export type AccountIntegrationType = {|
 
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
+  confidenceThreshold: number,
   fieldId?: number,
   subdomain: string,
   ticketImport: {
@@ -387,6 +422,7 @@ export const AccountIntegrationSchema = Joi.object({
   .default();
 
 export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
+  confidenceThreshold: Joi.number(),
   fieldId: Joi.number(),
   subdomain: Joi.string()
     .allow('')
@@ -400,10 +436,20 @@ export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
 });
 
 export type AccountSettingPostBodyType = {|
-  twitterSearches: string[],
+  integrations?: {|
+    zenDesk: {|
+      confidenceThreshold: number,
+    |},
+  |},
+  twitterSearches?: string[],
 |};
 
 export const AccountSettingPostBodySchema = Joi.object({
+  integrations: Joi.object({
+    zenDesk: Joi.object({
+      confidenceThreshold: Joi.number(),
+    }),
+  }),
   twitterSearches: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
@@ -434,7 +480,6 @@ export const WatsonClassifierSchema = Joi.object({
 });
 
 export type AccountSettingUnsavedType = {|
-  ...AccountSettingPostBodyType,
   accountId: string,
   apiToken: ?string,
   feedbackUsageByDate: {
@@ -444,6 +489,7 @@ export type AccountSettingUnsavedType = {|
     zenDesk: ZenDeskIntegrationType,
   },
   tier: AccountTierType,
+  twitterSearches?: string[],
   watsonClassifier: ?WatsonClassifierType,
 |};
 
@@ -477,15 +523,3 @@ export const AccountSettingSchema = Joi.object({
 })
   .unknown()
   .required();
-
-export const isPositiveFeedbackAnalysis = ({
-  contentSentiment: { positive },
-}: FeedbackAnalysisType) => positive > 0.65;
-
-export const isNegativeFeedbackAnalysis = ({
-  contentSentiment: { negative },
-}: FeedbackAnalysisType) => negative > 0.65;
-
-export const isNeutralFeedbackAnalysis = (feedback: FeedbackAnalysisType) =>
-  !isNegativeFeedbackAnalysis(feedback) &&
-  !isPositiveFeedbackAnalysis(feedback);

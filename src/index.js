@@ -36,95 +36,6 @@ const ModelSavedFieldsSchema = {
   updatedAt: Joi.string().isoDate(),
 };
 
-export type SupportedLanguageType =
-  | 'zh'
-  | 'zh-Hant'
-  | 'en'
-  | 'fr'
-  | 'de'
-  | 'it'
-  | 'ja'
-  | 'ko'
-  | 'pt'
-  | 'es';
-
-export const SupportedLanguageSchema = Joi.string().valid([
-  'zh',
-  'zh-Hant',
-  'en',
-  'fr',
-  'de',
-  'it',
-  'ja',
-  'ko',
-  'pt',
-  'es',
-]);
-
-type TextSpanType = {
-  beginOffset: number,
-  content: string,
-};
-
-export const TextSpanSchema = Joi.object({
-  beginOffset: Joi.number()
-    .min(-1)
-    .required(),
-  content: Joi.string().required(),
-}).unknown();
-
-export type SentimentType = {|
-  magnitude: number,
-  score: number,
-|};
-
-export const SentimentSchema = Joi.object({
-  magnitude: Joi.number()
-    .min(0)
-    .required(),
-  score: Joi.number()
-    .min(-1)
-    .max(1)
-    .required(),
-}).unknown();
-
-export type CategoryConfidenceType = {
-  categoryName: string,
-  confidence: number,
-};
-
-export const CategorySchema = Joi.object({
-  categoryName: Joi.string().required(),
-  confidence: Joi.number()
-    .min(0)
-    .max(1)
-    .required(),
-}).unknown();
-
-export type SentenceType = {|
-  sentiment: SentimentType,
-  text: TextSpanType,
-|};
-
-export const SentenceSchema = Joi.object({
-  sentiment: SentimentSchema.required(),
-  text: TextSpanSchema.required(),
-}).unknown();
-
-export type SentimentAnalysisResponseType = {|
-  documentSentiment: SentimentType,
-  language: SupportedLanguageType,
-  sentences: SentenceType[],
-|};
-
-export const SentimentAnalysisResponseSchema = Joi.object({
-  documentSentiment: SentimentSchema.required(),
-  language: SupportedLanguageSchema.required(),
-  sentences: Joi.array()
-    .items(SentenceSchema)
-    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-}).unknown();
-
 export type FeedbackType = 'email' | 'twitter' | 'zenDesk';
 
 export type ZenDeskUserType = {|
@@ -173,20 +84,10 @@ export const UserSchema = Joi.compile([
   ZenDeskUserSchema,
 ]);
 
-export type FeedbackSentimentAndCategorizationType = {|
-  contentSentiment: SentimentType,
-  documentCategorization: CategoryConfidenceType[],
-  sentences: Array<{
-    categorization: CategoryConfidenceType[],
-    ...SentenceType,
-  }>,
-  topDocumentCategories: Array<string>,
-  topSentenceCategories: Array<string>,
-|};
-
 export type FeedbackAnalysisUnsavedType = {|
-  ...FeedbackSentimentAndCategorizationType,
   accountId: string,
+  classification: { [key: string]: number },
+  content: string,
   feedbackId: string,
   feedbackType: FeedbackType,
   user: UserType,
@@ -200,67 +101,19 @@ export type FeedbackAnalysisType = {
 
 export const FeedbackAnalysisSchema = Joi.object({
   ...ModelSavedFieldsSchema,
-  contentSentiment: SentimentSchema.required(),
-  documentCategorization: Joi.array()
-    .items(CategorySchema)
-    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
+  classification: Joi.object().pattern(/./, Joi.number()),
+  content: Joi.string().required(),
   feedbackId: Joi.string()
     .guid()
     .default(() => uuid.v4(), 'uuid v4'),
   feedbackType: Joi.string()
     .allow(['email', 'twitter', 'zenDesk'])
     .required(),
-  sentences: Joi.array()
-    .items(
-      SentenceSchema.keys({
-        categorization: Joi.array()
-          .items(CategorySchema)
-          .default(
-            () => [],
-            'Do not allow undefined or null to come out of the DB'
-          ),
-      }).required()
-    )
-    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-  topDocumentCategories: Joi.array()
-    .items(Joi.string())
-    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-  topSentenceCategories: Joi.array()
-    .items(Joi.string())
-    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
   user: UserSchema,
   userId: Joi.string().required(),
 })
   .unknown()
   .required();
-
-export type WatsonClassifyResponseType = {
-  classes: Array<{ class_name: string, confidence: number }>,
-  classifier_id: string,
-  text: string,
-  top_class: string,
-  url: string,
-};
-
-export const WatsonClassifyResponseSchema = Joi.object({
-  classes: Joi.array()
-    .items(
-      Joi.object({
-        class_name: Joi.string().required(),
-        confidence: Joi.number()
-          .min(0)
-          .max(1)
-          .required(),
-      }).unknown()
-    )
-    .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-  classifier_id: Joi.string().required(),
-  text: Joi.string().required(),
-  top_class: Joi.string().required(),
-  url: Joi.string()
-    .uri({ allowRelative: true })
-    .required(),
-});
 
 export type EmailFeedbackPostBodyType = {|
   content: string,
@@ -457,28 +310,6 @@ export const AccountSettingPostBodySchema = Joi.object({
   .unknown()
   .required();
 
-export type WatsonClassifierType = {|
-  classifier_id: string,
-  created: string,
-  language: string,
-  name: string,
-  status: 'Non Existent' | 'Training' | 'Failed' | 'Available' | 'Unavailable',
-  status_description: string,
-  url: string,
-|};
-
-export const WatsonClassifierSchema = Joi.object({
-  classifier_id: Joi.string().required(),
-  created: Joi.string().required(),
-  language: Joi.string().required(),
-  name: Joi.string().required(),
-  status: Joi.string()
-    .valid(['Non Existent', 'Training', 'Failed', 'Available', 'Unavailable'])
-    .required(),
-  status_description: Joi.string().required(),
-  url: Joi.string().required(),
-});
-
 export type AccountSettingUnsavedType = {|
   accountId: string,
   apiToken: ?string,
@@ -490,7 +321,6 @@ export type AccountSettingUnsavedType = {|
   },
   tier: AccountTierType,
   twitterSearches?: string[],
-  watsonClassifier: ?WatsonClassifierType,
 |};
 
 export type AccountSettingType = {
@@ -519,7 +349,6 @@ export const AccountSettingSchema = Joi.object({
   twitterSearches: Joi.array()
     .items(Joi.string())
     .default(() => [], 'Do not allow undefined or null to come out of the DB'),
-  watsonClassifier: WatsonClassifierSchema,
 })
   .unknown()
   .required();

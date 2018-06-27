@@ -255,7 +255,7 @@ export type AccountIntegrationType = {|
 
 export type ZenDeskIntegrationType = {
   ...AccountIntegrationType,
-  confidenceThreshold: number,
+  confidenceThresholds: { [key: string]: number },
   fieldId?: number,
   subdomain: string,
   ticketImport: {
@@ -275,7 +275,9 @@ export const AccountIntegrationSchema = Joi.object({
   .default();
 
 export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
-  confidenceThreshold: Joi.number(),
+  confidenceThresholds: Joi.object()
+    .pattern(/./, Joi.number())
+    .required(),
   fieldId: Joi.number(),
   subdomain: Joi.string()
     .allow('')
@@ -291,7 +293,7 @@ export const ZenDeskIntegrationSchema = AccountIntegrationSchema.keys({
 export type AccountSettingPostBodyType = {|
   integrations?: {|
     zenDesk: {|
-      confidenceThreshold: number,
+      confidenceThresholds: { [key: string]: number },
     |},
   |},
   twitterSearches?: string[],
@@ -300,7 +302,9 @@ export type AccountSettingPostBodyType = {|
 export const AccountSettingPostBodySchema = Joi.object({
   integrations: Joi.object({
     zenDesk: Joi.object({
-      confidenceThreshold: Joi.number(),
+      confidenceThresholds: Joi.object()
+        .pattern(/./, Joi.number())
+        .required(),
     }),
   }),
   twitterSearches: Joi.array()
